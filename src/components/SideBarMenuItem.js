@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Image } from "antd";
+import { Link } from "react-router-dom";
 
 export default class SideBarMenuItem extends Component {
   onChangeMenu = () => {
@@ -10,16 +11,19 @@ export default class SideBarMenuItem extends Component {
     const { onChangeMenu } = this;
     const { item } = this.props;
     return (
-      <div
-        className="customBtn noselect"
-        style={item.isActive ? styles.slideBarItemActive : styles.slideBarItem}
-        onClick={onChangeMenu}
-      >
-        <Image
-          preview={false}
-          src={require(`../asssets/Images/${item.icon}.png`)}
-        />
-        <div style={styles.label}>{item.label}</div>
+      <div className="customBtn noselect" onClick={onChangeMenu}>
+        <Link
+          style={
+            item.isActive ? styles.slideBarItemActive : styles.slideBarItem
+          }
+          to={`${item.path}`}
+        >
+          <Image
+            preview={false}
+            src={require(`../asssets/Images/${item.icon}.png`)}
+          />
+          <div style={styles.label}>{item.label}</div>
+        </Link>
       </div>
     );
   }

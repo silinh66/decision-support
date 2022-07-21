@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image } from "antd";
+import { Image, Button } from "antd";
 import RecentActivityItem from "../components/RecentActivityItem";
 import RecentTrendItem from "../components/RecentTrendItem";
 import RecentSubjectItem from "../components/RecentSubjectItem";
@@ -63,6 +63,8 @@ export default class HomeContent extends Component {
             </div>
           </div>
         </div>
+        {/* <div style={styles.stickyBottom}>
+        </div> */}
       </div>
     );
   }
@@ -141,4 +143,19 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
   },
+  // stickyBottom: {
+  //   position: "sticky",
+  //   bottom: "0px",
+  //   zIndex: 999,
+  //   backgroundColor: "#1D203E",
+  //   // paddingTop: "20px",
+  //   height: "8vh",
+  //   borderTop: "1px solid #5A5D70",
+  //   paddingLeft: "24px",
+  //   paddingRight: "28px",
+  //   // marginBottom: "10px",
+  //   display: "flex",
+  //   justifyContent: "flex-end",
+  //   alignItems: "center",
+  // },
 };

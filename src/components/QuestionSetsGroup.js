@@ -15,7 +15,11 @@ export default class QuestionSetsGroup extends Component {
 
         <div style={styles.container}>
           {listQuestionSets.map((questionSet) => (
-            <QuestionSetItem key={questionSet.id} questionSet={questionSet} />
+            <QuestionSetItem
+              // onPickQuestionSet={onPickQuestionSet}
+              key={questionSet.id}
+              questionSet={questionSet}
+            />
           ))}
         </div>
       </div>

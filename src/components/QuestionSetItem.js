@@ -1,35 +1,47 @@
 import { Image } from "antd";
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 export default class QuestionSetItem extends Component {
+  onPickQuestionSet = () => {
+    const { questionSet } = this.props;
+    // this.props.onPickQuestionSet(questionSet);
+  };
   render() {
+    const { onPickQuestionSet } = this;
     const { questionSet } = this.props;
     return (
-      <div className="customBtn noselect" style={styles.container}>
-        <Image
-          preview={false}
-          src={require(`../asssets/Images/${questionSet.image}.png`)}
-          style={styles.image}
-        />
-        <div style={styles.detailContainer}>
-          <div style={styles.title}>{questionSet.name}</div>
-          <div style={styles.description}>{questionSet.description}</div>
-          <div style={styles.views}>
-            <Image
-              style={styles.viewsIcon}
-              preview={false}
-              src={require(`../asssets/Images/views.png`)}
-            />
-            {"  "}
-            {questionSet.views} Người xem
+      <div
+        className="customBtn noselect"
+        style={styles.container}
+        onClick={onPickQuestionSet}
+      >
+        <Link to={`exam/${questionSet.id}`}>
+          <Image
+            preview={false}
+            src={require(`../asssets/Images/${questionSet.image}.png`)}
+            style={styles.image}
+          />
+          <div style={styles.detailContainer}>
+            <div style={styles.title}>{questionSet.name}</div>
+            <div style={styles.description}>{questionSet.description}</div>
+            <div style={styles.views}>
+              <Image
+                style={styles.viewsIcon}
+                preview={false}
+                src={require(`../asssets/Images/views.png`)}
+              />
+              {"  "}
+              {questionSet.views} Người xem
+            </div>
           </div>
-        </div>
-        <Image
-          className="polygon"
-          preview={false}
-          src={require(`../asssets/Images/${questionSet.icon}.png`)}
-          style={styles.icon}
-        />
+          <Image
+            className="polygon"
+            preview={false}
+            src={require(`../asssets/Images/${questionSet.icon}.png`)}
+            style={styles.icon}
+          />
+        </Link>
       </div>
     );
   }
@@ -108,7 +120,7 @@ const styles = {
     height: "100px",
     zIndex: "2",
     position: "absolute",
-    top: "-38vh",
-    left: "-120px",
+    top: "-40vh",
+    left: "20vh",
   },
 };

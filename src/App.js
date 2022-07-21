@@ -1,5 +1,6 @@
 import "./App.css";
 import { Row, Col, Modal, Input } from "antd";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import SideBar from "./components/SideBar";
 import SideMenu from "./components/SideMenu";
 import UserContainer from "./components/UserContainer";
@@ -15,6 +16,8 @@ import Login from "./components/Login";
 import { Component } from "react";
 import Register from "./components/Register";
 import LogoutContainer from "./components/LogoutContainer";
+import Exam from "./screens/Exam";
+import Result from "./screens/Result";
 
 export default class App extends Component {
   constructor(props) {
@@ -75,13 +78,34 @@ export default class App extends Component {
             <div style={styles.searchComponent}>
               <Input style={styles.input} placeholder="&#xF002;  Tìm kiếm..." />
             </div>
-            {currentTab == "0" && <HomeContent />}
+            {/* {currentTab == "0" && <HomeContent />}
             {currentTab == "1" && <Timetable />}
             {currentTab == "2" && <Target />}
             {currentTab == "3" && <ListPlan />}
             {currentTab == "4" && <Score />}
-            {currentTab == "5" && <Exercise />}
-            {currentTab == "6" && <Ability />}
+            {currentTab == "5" && ( */}
+            <Routes>
+              <Route>
+                <Route index element={<HomeContent />} />
+                <Route path={"exercise"} element={<Exercise />} />
+                <Route
+                  path={"exercise/exam/:questionSetId"}
+                  element={<Exam />}
+                />
+                <Route path={"home"} element={<HomeContent />} />
+                <Route path={"timetable"} element={<Timetable />} />
+                <Route path={"target"} element={<Target />} />
+                <Route path={"listPlan"} element={<ListPlan />} />
+                <Route path={"score"} element={<Score />} />
+                <Route path={"ability"} element={<Ability />} />
+                <Route
+                  path={"exercise/exam/:questionSetId/result"}
+                  element={<Result />}
+                />
+              </Route>
+            </Routes>
+            {/* )} */}
+            {/* {currentTab == "6" && <Ability />} */}
           </Col>
           <Col span={4} xl={4}>
             <div style={styles.thirdCol}>
@@ -118,7 +142,7 @@ export default class App extends Component {
 
 const styles = {
   container: {
-    height: "150vh",
+    height: "200vh",
     display: "flex",
     flexDirection: "column",
   },
