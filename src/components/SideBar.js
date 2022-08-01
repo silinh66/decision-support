@@ -7,19 +7,163 @@ export default class SideBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listAccessPermission: [
-        {
-          key: "0",
-          label: "manager",
-          selected: false,
-        },
-        {
-          key: "1",
-          label: "student",
-          selected: true,
-        },
-      ],
+      listAccessPermission: [],
     };
+  }
+
+  componentDidMount() {
+    if (this.props.account) {
+      if (this.props.account.permission === 0) {
+        this.setState({
+          listAccessPermission: this.props.isLogin
+            ? [
+                {
+                  key: "0",
+                  label: "manager",
+                  selected: false,
+                },
+                {
+                  key: "1",
+                  label: "student",
+                  selected: true,
+                },
+              ]
+            : [
+                {
+                  key: "0",
+                  label: "manager",
+                  selected: false,
+                },
+                {
+                  key: "1",
+                  label: "student",
+                  selected: false,
+                },
+              ],
+        });
+      }
+    } else if (this.props.account.permission === 1) {
+      this.setState({
+        listAccessPermission: this.props.isLogin
+          ? [
+              {
+                key: "0",
+                label: "manager",
+                selected: true,
+              },
+              {
+                key: "1",
+                label: "student",
+                selected: false,
+              },
+            ]
+          : [
+              {
+                key: "0",
+                label: "manager",
+                selected: false,
+              },
+              {
+                key: "1",
+                label: "student",
+                selected: false,
+              },
+            ],
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      if (prevProps.isLogin !== this.props.isLogin) {
+        this.setState({
+          listAccessPermission: this.props.isLogin
+            ? [
+                {
+                  key: "0",
+                  label: "manager",
+                  selected: true,
+                },
+                {
+                  key: "1",
+                  label: "student",
+                  selected: false,
+                },
+              ]
+            : [
+                {
+                  key: "0",
+                  label: "manager",
+                  selected: false,
+                },
+                {
+                  key: "1",
+                  label: "student",
+                  selected: false,
+                },
+              ],
+        });
+      }
+      if (prevProps.account !== this.props.account) {
+        if (this.props.account.permission === 0) {
+          this.setState({
+            listAccessPermission: this.props.isLogin
+              ? [
+                  {
+                    key: "0",
+                    label: "manager",
+                    selected: false,
+                  },
+                  {
+                    key: "1",
+                    label: "student",
+                    selected: true,
+                  },
+                ]
+              : [
+                  {
+                    key: "0",
+                    label: "manager",
+                    selected: false,
+                  },
+                  {
+                    key: "1",
+                    label: "student",
+                    selected: false,
+                  },
+                ],
+          });
+        } else if (this.props.account.permission === 1) {
+          this.setState({
+            listAccessPermission: this.props.isLogin
+              ? [
+                  {
+                    key: "0",
+                    label: "manager",
+                    selected: true,
+                  },
+                  {
+                    key: "1",
+                    label: "student",
+                    selected: false,
+                  },
+                ]
+              : [
+                  {
+                    key: "0",
+                    label: "manager",
+                    selected: false,
+                  },
+                  {
+                    key: "1",
+                    label: "student",
+                    selected: false,
+                  },
+                ],
+          });
+        }
+      }
+    }
   }
 
   onChangePermission = (key) => {
@@ -30,7 +174,10 @@ export default class SideBar extends Component {
       }
       return { ...item, selected: false };
     });
-    this.setState({ listAccessPermission: newListAccessPermission });
+    if (this.props.isLogin && this.props.account.permission === 1) {
+      this.setState({ listAccessPermission: newListAccessPermission });
+      this.props.onChangePermission(key);
+    }
   };
 
   render() {
@@ -52,6 +199,7 @@ export default class SideBar extends Component {
               key={item.key}
               label={item.label}
               item={item}
+              permission={this.props.account.permission}
             />
           ))}
           <Image
@@ -61,7 +209,7 @@ export default class SideBar extends Component {
             preview={false}
           />
         </div>
-        <img style={styles.barSvg} src={barSvg} />
+        <img style={styles.barSvg} src={barSvg} alt="barSvg" />
       </div>
     );
   }

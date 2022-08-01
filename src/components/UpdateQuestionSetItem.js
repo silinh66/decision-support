@@ -1,11 +1,14 @@
-import { Image } from "antd";
+import { Image, Modal } from "antd";
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { removeQuestionSetAPI } from "../api/ApiQuestion";
+import ModalDeleteQuestionSet from "./ModalDeleteQuestionSet";
 
-export default class QuestionSetItem extends Component {
+export default class UpdateQuestionSetItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isModalVisible: false,
       icon: "mathIcon",
     };
   }
@@ -26,28 +29,48 @@ export default class QuestionSetItem extends Component {
     });
   }
 
+  showModal = () => {
+    this.setState({
+      isModalVisible: true,
+    });
+  };
+
+  handleOk = () => {
+    this.setState({
+      isModalVisible: false,
+    });
+    const payload = {
+      id_topic: this.props.questionSet.id,
+      des: this.props.questionSet.description,
+      level: this.props.questionSet.level,
+      total: 50,
+      status: 0,
+      image: this.props.questionSet.image,
+    };
+    const response = removeQuestionSetAPI(payload);
+    console.log("response: ", response);
+    this.props.onGetListOptionQuestionSet();
+  };
+
+  handleCancel = () => {
+    this.setState({
+      isModalVisible: false,
+    });
+  };
   onPickQuestionSet = () => {
     // const { questionSet } = this.props;
     // this.props.onPickQuestionSet(questionSet);
   };
   render() {
-    const { onPickQuestionSet } = this;
-    const { questionSet, isTwoQuestionSet, topic } = this.props;
-    const { icon } = this.state;
+    const { onPickQuestionSet, showModal, handleOk, handleCancel } = this;
+    const { questionSet, isTwoQuestionSet } = this.props;
+    const { isModalVisible, icon } = this.state;
     return (
       <div
-        className="customBtn noselect"
         style={isTwoQuestionSet ? styles.containerTwo : styles.container}
         onClick={onPickQuestionSet}
       >
-        <Link
-          state={{
-            id: "1",
-            questionSet,
-            topic,
-          }}
-          to={`/exam/${questionSet.id}`}
-        >
+        <Link className="disabled-link" to={`exam/${questionSet.id}`}>
           <Image preview={false} src={questionSet.image} style={styles.image} />
           <div style={styles.detailContainer}>
             <div style={styles.title}>{questionSet.description}</div>
@@ -62,6 +85,7 @@ export default class QuestionSetItem extends Component {
               4987 Người xem
             </div>
           </div>
+
           <Image
             className="polygon"
             preview={false}
@@ -69,6 +93,24 @@ export default class QuestionSetItem extends Component {
             style={styles.icon}
           />
         </Link>
+        <Image
+          className="customBtn noselect"
+          onClick={showModal}
+          style={styles.optionIcon}
+          preview={false}
+          src={require(`../asssets/Images/option.png`)}
+        />
+        <Modal
+          visible={isModalVisible}
+          onOk={handleOk}
+          title="Thông báo"
+          onCancel={handleCancel}
+          footer={null}
+          centered
+          style={styles.modal}
+        >
+          <ModalDeleteQuestionSet handleOk={handleOk} />
+        </Modal>
       </div>
     );
   }
@@ -165,5 +207,13 @@ const styles = {
     position: "absolute",
     top: "-40vh",
     left: "20vh",
+  },
+  optionIcon: {
+    zIndex: "2",
+    position: "absolute",
+    top: "-48vh",
+    left: "-2vh",
+    width: "25px",
+    height: "25px",
   },
 };

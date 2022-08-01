@@ -5,9 +5,20 @@ export default class UserContainer extends Component {
   render() {
     return (
       <div style={styles.userContainer}>
-        <Button onClick={this.props.showModal} style={styles.button}>
+        <button
+          className="customBtn noselect"
+          onClick={this.props.showModal}
+          style={styles.button}
+        >
           Đăng nhập
-        </Button>
+        </button>
+        <button
+          className="customBtn noselect"
+          onClick={this.props.showModalRegister}
+          style={styles.buttonRegister}
+        >
+          Đăng ký
+        </button>
       </div>
     );
   }
@@ -30,5 +41,15 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     height: "38px",
+    padding: "10px",
+  },
+  buttonRegister: {
+    backgroundColor: "#B38EE6",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "8px",
+    height: "38px",
+    padding: "10px",
+    marginLeft: "10px",
   },
 };

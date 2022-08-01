@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Empty from "../components/Empty";
 
-export default class ListPlan extends Component {
+export default class ResetPassword extends Component {
   render() {
     return (
       <div style={styles.container}>

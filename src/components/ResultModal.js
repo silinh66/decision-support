@@ -1,8 +1,25 @@
+import { Image } from "antd";
+import { round } from "lodash";
 import React, { Component } from "react";
-import { Image, Button } from "antd";
+import { getLocalData } from "../services/StoreService";
 export default class ResultModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      account: {},
+    };
+  }
+
+  componentDidMount() {
+    if (getLocalData("account")) {
+      this.setState({
+        account: getLocalData("account"),
+      });
+    }
+  }
   render() {
-    const { onCloseModal } = this.props;
+    const { onCloseModal, count, total, time } = this.props;
+    const { account } = this.state;
     return (
       <div style={styles.container}>
         <div style={styles.row}>
@@ -13,7 +30,7 @@ export default class ResultModal extends Component {
             ></Image>
           </div>
           <div style={styles.text}>Học sinh:</div>
-          <div style={styles.text}>Hà Bảo Khiêm</div>
+          <div style={styles.text}>{account && account.name}</div>
         </div>
         <div style={styles.row}>
           <div style={styles.iconContainer}>
@@ -23,7 +40,9 @@ export default class ResultModal extends Component {
             ></Image>
           </div>
           <div style={styles.text}>Số câu đúng:</div>
-          <div style={styles.text}>47/50</div>
+          <div style={styles.text}>
+            {count}/{total}
+          </div>
         </div>
         <div style={styles.row}>
           <div style={styles.iconContainer}>
@@ -33,7 +52,7 @@ export default class ResultModal extends Component {
             ></Image>
           </div>
           <div style={styles.text}>Điểm số:</div>
-          <div style={styles.text}>9.4/10</div>
+          <div style={styles.text}>{round((count / total) * 10, 2)}/10</div>
         </div>
         <div style={styles.row}>
           <div style={styles.iconContainer}>
@@ -43,11 +62,15 @@ export default class ResultModal extends Component {
             ></Image>
           </div>
           <div style={styles.text}>Thời gian:</div>
-          <div style={styles.text}>84:36</div>
+          <div style={styles.text}>84:56</div>
         </div>
-        <Button onClick={onCloseModal} style={styles.button}>
+        <button
+          className="customBtn noselect"
+          onClick={onCloseModal}
+          style={styles.loginBtn}
+        >
           Xem đáp án
-        </Button>
+        </button>
       </div>
     );
   }
@@ -86,7 +109,7 @@ const styles = {
     width: "10%",
   },
   button: {
-    backgroundColor: "#393D5D",
+    backgroundColor: "#B38EE6",
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
@@ -95,5 +118,14 @@ const styles = {
     marginBottom: "20px",
     marginTop: "5px",
     fontSize: "20px",
+  },
+  loginBtn: {
+    width: "100%",
+    height: "55px",
+    backgroundColor: "#B38EE6",
+    color: "#fff",
+    borderRadius: "10px",
+    border: "1px solid #393D5D",
+    marginBottom: "10px",
   },
 };

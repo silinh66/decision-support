@@ -212,6 +212,40 @@ input.empty {
   color: #1D203E
 }
 
+.disabled-link {
+  pointer-events: none;
+}
+
+.ant-btn.ant-btn-default {
+  background-color: #393D5D !important; 
+  color: #fff !important;
+  border-color: #393D5D !important;
+  border-radius: 10px;
+}
+
+input.upload {
+  background-color: #393D5D !important; 
+  color: #fff !important;
+  border-color: #393D5D !important;
+  border-radius: 10px;
+}
+
+.ant-notification-notice-message {
+  background-color: #393D5D !important; 
+}
+
+.ant-notification-notice   {
+  background-color: #393D5D !important; 
+  
+}
+
+.ant-notification-notice-message {
+  color: #fff !important;
+}
+
+
+
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

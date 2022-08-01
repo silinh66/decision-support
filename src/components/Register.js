@@ -1,38 +1,124 @@
-import { Form, Input, Button, Checkbox, Image, Select } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Image, Input, notification, Select } from "antd";
+import { get, trim } from "lodash";
 import React, { Component } from "react";
-import { Option } from "antd/lib/mentions";
-
+import { loginAccountAPI, registerAccountAPI } from "../api/ApiAccount";
+import { Encrypt } from "../common/encoding";
+import { setLocalData } from "../services/StoreService";
+import { EncryptPassword } from "../utils/common";
+const { Option } = Select;
 class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
       passwordShow: false,
       passwordShowAgain: false,
+      username: "",
+      password: "",
+      rePassword: "",
+      email: "",
+      firstName: "",
     };
   }
-
-  onFinish = (data) => {
-    // const email = get(data, "email");
-    // const password = get(data, "password");
-    // const payload = {
-    // 	email,
-    // 	password: EncriptPassword(email, password),
-    // };
-    // this.props.doLoginAccount(payload, {
-    // 	callbackOnSuccess: () => {
-    // 		window.location.reload();
-    // 	},
-    // });
-  };
 
   handleChange = (value) => {
     console.log(`selected ${value}`);
   };
 
+  onChangeUsername = (e) => {
+    this.setState({ username: e.target.value });
+  };
+
+  onChangePassword = (e) => {
+    this.setState({ password: e.target.value });
+  };
+
+  onChangeRePassword = (e) => {
+    this.setState({ rePassword: e.target.value });
+  };
+
+  onChangeEmail = (e) => {
+    this.setState({ email: e.target.value });
+  };
+  onChangeFirstName = (e) => {
+    this.setState({ firstName: e.target.value });
+  };
+
+  onRegister = async () => {
+    const { email, firstName, password, rePassword } = this.state;
+    if (!email) {
+      notification.error({ message: "Chưa nhập email" });
+      return;
+    }
+    if (!firstName) {
+      notification.error({ message: "Chưa nhập tên" });
+      return;
+    }
+    if (!password) {
+      notification.error({ message: "Chưa nhập mật khẩu" });
+      return;
+    }
+    if (!rePassword) {
+      notification.error({ message: "Chưa xác nhận mật khẩu" });
+      return;
+    }
+    if (rePassword !== password) {
+      notification.error({ message: "Mật khẩu không khớp" });
+      return;
+    }
+    const body = {
+      email: trim(email),
+      name: trim(firstName),
+      password: Encrypt(email, password),
+    };
+    try {
+      const response = await registerAccountAPI(body);
+      if (response.status !== 200) {
+        notification.error({
+          message: `Đăng kí thất bại ${response.error}`,
+        });
+        return;
+      }
+      const payload = {
+        email: email,
+        password: EncryptPassword(email, password),
+      };
+      const responseLogin = await loginAccountAPI(payload);
+      if (responseLogin.status !== 200) {
+        notification.error({
+          message: `Đăng nhập thất bại ${responseLogin.error}`,
+        });
+        return;
+      }
+      console.log("responseLogin: ", responseLogin);
+      await setLocalData("access_token", get(response.payload, "userToken"));
+      await setLocalData("account", get(response.payload, "userInfo"));
+      window.location.reload();
+    } catch (error) {
+      notification.error({
+        message: `Đăng kí thất bại ${error}`,
+      });
+    }
+  };
+
   render() {
-    const { onFinish, handleChange } = this;
-    const { passwordShow, passwordShowAgain } = this.state;
+    const {
+      handleChange,
+      onChangeUsername,
+      onRegister,
+      onChangeEmail,
+      onChangePassword,
+      onChangeRePassword,
+      onChangeFirstName,
+    } = this;
+    const {
+      passwordShow,
+      passwordShowAgain,
+      username,
+      password,
+      email,
+      rePassword,
+      firstName,
+    } = this.state;
     return (
       <main style={styles.container} className="wrap-form">
         <div className="form-login">
@@ -51,7 +137,12 @@ class Register extends Component {
               <div style={styles.label}>Tên đăng nhập</div>
             </div>
             <div style={styles.usernameContainer}>
-              <Input style={styles.input} placeholder="Nhập tên đăng nhập" />
+              <Input
+                value={username}
+                onChange={onChangeUsername}
+                style={styles.input}
+                placeholder="Nhập tên đăng nhập"
+              />
             </div>
             <div style={styles.inputContainer}>
               <Image
@@ -63,7 +154,12 @@ class Register extends Component {
             <div style={styles.nameContainer}>
               <Input style={styles.input} placeholder="Họ" />
               <Input style={styles.middleInput} placeholder="Tên đệm" />
-              <Input style={styles.input} placeholder="Tên" />
+              <Input
+                value={firstName}
+                onChange={onChangeFirstName}
+                style={styles.input}
+                placeholder="Tên"
+              />
             </div>
             <div style={styles.inputContainer}>
               <Image
@@ -93,7 +189,12 @@ class Register extends Component {
               <div style={styles.label}>Địa chỉ email</div>
             </div>
             <div style={styles.usernameContainer}>
-              <Input style={styles.input} placeholder="Nhập địa chỉ email" />
+              <Input
+                value={email}
+                onChange={onChangeEmail}
+                style={styles.input}
+                placeholder="Nhập địa chỉ email"
+              />
             </div>
             <div style={styles.inputContainer}>
               <Image
@@ -105,6 +206,8 @@ class Register extends Component {
             <div style={styles.usernameContainer}>
               <Input
                 className="inputWithSuffix"
+                value={password}
+                onChange={onChangePassword}
                 type={passwordShow ? "text" : "password"}
                 suffix={
                   <Image
@@ -125,6 +228,8 @@ class Register extends Component {
             <div style={styles.usernameContainer}>
               <Input
                 className="inputWithSuffix"
+                value={rePassword}
+                onChange={onChangeRePassword}
                 type={passwordShowAgain ? "text" : "password"}
                 suffix={
                   <Image
@@ -146,7 +251,7 @@ class Register extends Component {
                 preview={false}
                 src={require("../asssets/Images/capcha.png")}
               ></Image>
-              <div style={styles.label}>Nhập mã capcha</div>
+              <div style={styles.label}>Nhập mã captcha</div>
             </div>
             <div style={styles.nameContainer}>
               <Input
@@ -161,21 +266,19 @@ class Register extends Component {
                   ></Image>
                 }
                 style={styles.input}
-                placeholder="Mã capcha"
+                placeholder="Mã captcha"
               />
               <Input style={styles.rightInput} placeholder="Nhập mã capcha" />
             </div>
             <div style={styles.divider}></div>
             <div style={styles.btnFooter}>
               <button
-                onClick={() => {
-                  console.log("Login");
-                }}
+                className="customBtn noselect"
+                onClick={onRegister}
                 style={styles.loginBtn}
               >
                 Đăng ký
               </button>
-              {/* hoặc <a href="">Đăng ký</a> */}
             </div>
           </div>
         </div>
@@ -256,7 +359,7 @@ const styles = {
   loginBtn: {
     width: "90%",
     height: "55px",
-    backgroundColor: "#393D5D",
+    backgroundColor: "#B38EE6",
     color: "#fff",
     borderRadius: "10px",
     border: "1px solid #393D5D",

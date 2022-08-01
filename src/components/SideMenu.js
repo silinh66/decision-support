@@ -5,65 +5,308 @@ export default class SideMenu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listSideMenu: [
-        {
-          id: "0",
-          label: "Trang chủ",
-          icon: "home",
-          isActive: true,
-          path: "home",
-        },
-        {
-          id: "1",
-          label: "Thời khoá biểu",
-          icon: "calendar",
-          isActive: false,
-          path: "timetable",
-        },
-        {
-          id: "2",
-          label: "Quản lý mục tiêu",
-          icon: "target",
-          isActive: false,
-          path: "target",
-        },
-        {
-          id: "3",
-          label: "Danh sách phương án",
-          icon: "entrance",
-          isActive: false,
-          path: "listPlan",
-        },
-        {
-          id: "4",
-          label: "Bảng điểm",
-          icon: "score",
-          isActive: false,
-          path: "score",
-        },
-        {
-          id: "5",
-          label: "Làm bài tập",
-          icon: "exercise",
-          isActive: false,
-          path: "exercise",
-        },
-        {
-          id: "6",
-          label: "Đánh giá khả năng đỗ",
-          icon: "ability",
-          isActive: false,
-          path: "ability",
-        },
-      ],
+      listSideMenu: [],
     };
+  }
+
+  componentDidMount() {
+    if (this.props.isLogin) {
+      this.setState({
+        listSideMenu:
+          this.props.permission === "1"
+            ? [
+                {
+                  id: "0",
+                  label: "Trang chủ",
+                  icon: "home",
+                  isActive: true,
+                  path: "home",
+                },
+                {
+                  id: "1",
+                  label: "Thời khoá biểu",
+                  icon: "calendar",
+                  isActive: false,
+                  path: "timetable",
+                },
+                {
+                  id: "2",
+                  label: "Quản lý mục tiêu",
+                  icon: "target",
+                  isActive: false,
+                  path: "target",
+                },
+                {
+                  id: "3",
+                  label: "Danh sách phương án",
+                  icon: "entrance",
+                  isActive: false,
+                  path: "listPlan",
+                },
+                {
+                  id: "4",
+                  label: "Bảng điểm",
+                  icon: "score",
+                  isActive: false,
+                  path: "score",
+                },
+                {
+                  id: "5",
+                  label: "Làm bài tập",
+                  icon: "exercise",
+                  isActive: false,
+                  path: "exercise",
+                },
+                {
+                  id: "6",
+                  label: "Đánh giá khả năng đỗ",
+                  icon: "ability",
+                  isActive: false,
+                  path: "ability",
+                },
+              ]
+            : [
+                {
+                  id: "0",
+                  label: "Trang chủ",
+                  icon: "home",
+                  isActive: true,
+                  path: "home",
+                },
+                {
+                  id: "1",
+                  label: "Cấp lại mật khẩu",
+                  icon: "calendar",
+                  isActive: false,
+                  path: "resetPassword",
+                },
+                {
+                  id: "2",
+                  label: "Cập nhật bài tập",
+                  icon: "update",
+                  isActive: false,
+                  path: "updateExercise",
+                },
+                {
+                  id: "3",
+                  label: "Đánh giá khả năng đỗ",
+                  icon: "ability",
+                  isActive: false,
+                  path: "ability",
+                },
+              ],
+      });
+    } else {
+      this.setState({
+        listSideMenu: [
+          {
+            id: "0",
+            label: "Trang chủ",
+            icon: "home",
+            isActive: true,
+            path: "home",
+          },
+        ],
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      if (prevProps.permission !== this.props.permission) {
+        this.setState({
+          listSideMenu:
+            this.props.permission === "1"
+              ? [
+                  {
+                    id: "0",
+                    label: "Trang chủ",
+                    icon: "home",
+                    isActive: true,
+                    path: "home",
+                  },
+                  {
+                    id: "1",
+                    label: "Thời khoá biểu",
+                    icon: "calendar",
+                    isActive: false,
+                    path: "timetable",
+                  },
+                  {
+                    id: "2",
+                    label: "Quản lý mục tiêu",
+                    icon: "target",
+                    isActive: false,
+                    path: "target",
+                  },
+                  {
+                    id: "3",
+                    label: "Danh sách phương án",
+                    icon: "entrance",
+                    isActive: false,
+                    path: "listPlan",
+                  },
+                  {
+                    id: "4",
+                    label: "Bảng điểm",
+                    icon: "score",
+                    isActive: false,
+                    path: "score",
+                  },
+                  {
+                    id: "5",
+                    label: "Làm bài tập",
+                    icon: "exercise",
+                    isActive: false,
+                    path: "exercise",
+                  },
+                  {
+                    id: "6",
+                    label: "Đánh giá khả năng đỗ",
+                    icon: "ability",
+                    isActive: false,
+                    path: "ability",
+                  },
+                ]
+              : [
+                  {
+                    id: "0",
+                    label: "Trang chủ",
+                    icon: "home",
+                    isActive: true,
+                    path: "home",
+                  },
+                  {
+                    id: "1",
+                    label: "Cấp lại mật khẩu",
+                    icon: "calendar",
+                    isActive: false,
+                    path: "resetPassword",
+                  },
+                  {
+                    id: "2",
+                    label: "Cập nhật bài tập",
+                    icon: "update",
+                    isActive: false,
+                    path: "updateExercise",
+                  },
+                  {
+                    id: "3",
+                    label: "Đánh giá khả năng đỗ",
+                    icon: "ability",
+                    isActive: false,
+                    path: "ability",
+                  },
+                ],
+        });
+      }
+      if (prevProps.isLogin !== this.props.isLogin) {
+        if (this.props.isLogin) {
+          this.setState({
+            listSideMenu:
+              this.props.permission === "1"
+                ? [
+                    {
+                      id: "0",
+                      label: "Trang chủ",
+                      icon: "home",
+                      isActive: true,
+                      path: "home",
+                    },
+                    {
+                      id: "1",
+                      label: "Thời khoá biểu",
+                      icon: "calendar",
+                      isActive: false,
+                      path: "timetable",
+                    },
+                    {
+                      id: "2",
+                      label: "Quản lý mục tiêu",
+                      icon: "target",
+                      isActive: false,
+                      path: "target",
+                    },
+                    {
+                      id: "3",
+                      label: "Danh sách phương án",
+                      icon: "entrance",
+                      isActive: false,
+                      path: "listPlan",
+                    },
+                    {
+                      id: "4",
+                      label: "Bảng điểm",
+                      icon: "score",
+                      isActive: false,
+                      path: "score",
+                    },
+                    {
+                      id: "5",
+                      label: "Làm bài tập",
+                      icon: "exercise",
+                      isActive: false,
+                      path: "exercise",
+                    },
+                    {
+                      id: "6",
+                      label: "Đánh giá khả năng đỗ",
+                      icon: "ability",
+                      isActive: false,
+                      path: "ability",
+                    },
+                  ]
+                : [
+                    {
+                      id: "0",
+                      label: "Trang chủ",
+                      icon: "home",
+                      isActive: true,
+                      path: "home",
+                    },
+                    {
+                      id: "1",
+                      label: "Cấp lại mật khẩu",
+                      icon: "calendar",
+                      isActive: false,
+                      path: "resetPassword",
+                    },
+                    {
+                      id: "2",
+                      label: "Cập nhật bài tập",
+                      icon: "update",
+                      isActive: false,
+                      path: "updateExercise",
+                    },
+                    {
+                      id: "3",
+                      label: "Đánh giá khả năng đỗ",
+                      icon: "ability",
+                      isActive: false,
+                      path: "ability",
+                    },
+                  ],
+          });
+        } else {
+          this.setState({
+            listSideMenu: [
+              {
+                id: "0",
+                label: "Trang chủ",
+                icon: "home",
+                isActive: true,
+                path: "home",
+              },
+            ],
+          });
+        }
+      }
+    }
   }
 
   onChangeMenu = (item) => {
     const { listSideMenu } = this.state;
-    listSideMenu.map((item) => {
-      item.isActive = false;
-    });
+    listSideMenu.map((item) => (item.isActive = false));
     this.props.onChangeTab(item);
     listSideMenu[item].isActive = true;
     this.setState({ listSideMenu });
@@ -71,7 +314,6 @@ export default class SideMenu extends Component {
   render() {
     const { onChangeMenu } = this;
     const { listSideMenu } = this.state;
-
     return (
       <div style={styles.sideMenu}>
         <div className="customBtn noselect" style={styles.title}>

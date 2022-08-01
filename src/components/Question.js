@@ -39,12 +39,12 @@ export default class Question extends Component {
           >
             <Image
               src={require(`../asssets/Images/${
-                answer.answer == "A" ? "radioBtnActive" : "radioBtn"
+                answer.answer === "A" ? "radioBtnActive" : "radioBtn"
               }.png`)}
               preview={false}
               style={styles.radioBtn}
             />
-            <div style={answer.answer == "A" ? styles.ansActive : styles.ans}>
+            <div style={answer.answer === "A" ? styles.ansActive : styles.ans}>
               A: {question.as_a}
             </div>
           </div>
@@ -55,12 +55,12 @@ export default class Question extends Component {
           >
             <Image
               src={require(`../asssets/Images/${
-                answer.answer == "B" ? "radioBtnActive" : "radioBtn"
+                answer.answer === "B" ? "radioBtnActive" : "radioBtn"
               }.png`)}
               preview={false}
               style={styles.radioBtn}
             />
-            <div style={answer.answer == "B" ? styles.ansActive : styles.ans}>
+            <div style={answer.answer === "B" ? styles.ansActive : styles.ans}>
               B: {question.as_b}
             </div>
           </div>
@@ -73,12 +73,12 @@ export default class Question extends Component {
           >
             <Image
               src={require(`../asssets/Images/${
-                answer.answer == "C" ? "radioBtnActive" : "radioBtn"
+                answer.answer === "C" ? "radioBtnActive" : "radioBtn"
               }.png`)}
               preview={false}
               style={styles.radioBtn}
             />
-            <div style={answer.answer == "C" ? styles.ansActive : styles.ans}>
+            <div style={answer.answer === "C" ? styles.ansActive : styles.ans}>
               C: {question.as_c}
             </div>
           </div>
@@ -89,12 +89,12 @@ export default class Question extends Component {
           >
             <Image
               src={require(`../asssets/Images/${
-                answer.answer == "D" ? "radioBtnActive" : "radioBtn"
+                answer.answer === "D" ? "radioBtnActive" : "radioBtn"
               }.png`)}
               preview={false}
               style={styles.radioBtn}
             />
-            <div style={answer.answer == "D" ? styles.ansActive : styles.ans}>
+            <div style={answer.answer === "D" ? styles.ansActive : styles.ans}>
               D: {question.as_d}
             </div>
           </div>
@@ -126,15 +126,23 @@ const styles = {
     fontSize: "16px",
     fontWeight: "400",
     color: "#8C8C8C",
-    marginRight: "50px",
-    width: "50%",
+    width: "100%",
     display: "flex",
     alignItems: "center",
+    marginLeft: "10px",
   },
   radioBtn: {
-    paddingRight: "10px",
+    height: "20px",
+    width: "20px",
   },
   ansActive: {
+    fontFamily: "Roboto",
+    fontSize: "16px",
+    fontWeight: "400",
     color: "#fff",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    marginLeft: "10px",
   },
 };

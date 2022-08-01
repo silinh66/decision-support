@@ -4,8 +4,10 @@ import FriendItem from "./FriendItem";
 import { listFriends } from "../fakeData/listFriends";
 import { listRecentActivity } from "../fakeData/listRecentActivity";
 import ActivityItem from "./ActivityItem";
+import { get } from "lodash";
 export default class Inspector extends Component {
   render() {
+    const { isLogin, account } = this.props;
     return (
       <div style={styles.container}>
         <div style={styles.header}>
@@ -46,8 +48,10 @@ export default class Inspector extends Component {
             />
           </div>
 
-          <div style={styles.name}>Hà Bảo Khiêm</div>
-          <div style={styles.job}>Học sinh</div>
+          <div style={styles.name}>
+            {isLogin ? get(account, "name", "") : "Guest #120394"}
+          </div>
+          <div style={styles.job}>{isLogin ? "Học sinh" : ""}</div>
         </div>
         <div className="leftBar" style={styles.leftBar}>
           <div style={styles.listFriends}>
@@ -57,9 +61,20 @@ export default class Inspector extends Component {
                 Xem thêm
               </div>
             </div>
-            {listFriends.map((item, index) => (
-              <FriendItem key={item.key} item={item} />
-            ))}
+            {isLogin ? (
+              listFriends.map((item, index) => (
+                <FriendItem key={item.key} item={item} />
+              ))
+            ) : (
+              <div style={styles.addFriendContainer}>
+                <Image
+                  className="customBtn noselect"
+                  preview={false}
+                  src={require(`../asssets/Images/addFriend.png`)}
+                />
+                <div style={styles.addFriendText}>Thêm bạn</div>
+              </div>
+            )}
           </div>
           <div style={styles.listActivity}>
             <div style={styles.titleHeader}>
@@ -68,9 +83,13 @@ export default class Inspector extends Component {
                 Xem thêm
               </div>
             </div>
-            {listRecentActivity.map((item, index) => (
-              <ActivityItem key={item.key} item={item} />
-            ))}
+            {isLogin ? (
+              listRecentActivity.map((item, index) => (
+                <ActivityItem key={item.key} item={item} />
+              ))
+            ) : (
+              <div style={styles.noActivity}>Chưa có hoạt động nào</div>
+            )}
           </div>
         </div>
       </div>
@@ -91,6 +110,7 @@ const styles = {
     // width: "100%",
     borderLeft: "1px solid #5A5D70",
     // overflowY: "auto",
+    width: "100%",
   },
   header: {
     textAlign: "center",
@@ -165,5 +185,20 @@ const styles = {
     paddingLeft: "20px",
     paddingRight: "20px",
     overflowY: "auto",
+  },
+  addFriendContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addFriendText: {
+    color: "#ffffff",
+    marginLeft: "10px",
+  },
+  noActivity: {
+    color: "#ffffff",
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "20px",
   },
 };

@@ -1,11 +1,11 @@
+import { Image } from "antd";
 import React, { Component } from "react";
-import { Image, Button } from "antd";
 import RecentActivityItem from "../components/RecentActivityItem";
-import RecentTrendItem from "../components/RecentTrendItem";
 import RecentSubjectItem from "../components/RecentSubjectItem";
+import RecentTrendItem from "../components/RecentTrendItem";
 import { listRecentActivities } from "../fakeData/recentActivity";
-import { listRecentTrends } from "../fakeData/recentTrend";
 import { listRecentSubjects } from "../fakeData/recentSubject";
+import { listRecentTrends } from "../fakeData/recentTrend";
 
 export default class HomeContent extends Component {
   render() {

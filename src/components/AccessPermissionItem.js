@@ -1,5 +1,6 @@
-import React, { Component } from "react";
 import { Image } from "antd";
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 export default class AccessPermissionItem extends Component {
   onChangePermission = () => {
@@ -11,31 +12,46 @@ export default class AccessPermissionItem extends Component {
     const { label, isSelected } = this.props;
     return (
       <div
+        disabled={isSelected}
         onClick={onChangePermission}
-        style={styles.logo}
         className="customBtn noselect"
       >
-        <Image
-          src={require(`../asssets/Images/${label}.png`)}
-          preview={false}
-          style={styles.logoImg}
-        />
-        {isSelected && (
-          <>
-            <img
-              src={require("../asssets/Images/selected.png")}
-              style={styles.selected}
-            />
-            <img
-              src={require("../asssets/Images/selectedEffect.png")}
-              style={styles.selectedEffect}
-            />
-            <img
-              src={require("../asssets/Images/selectedBorder.png")}
-              style={styles.logoBorder}
-            />
-          </>
-        )}
+        <Link
+          className={
+            this.props.permission === 0
+              ? "disabled-link"
+              : isSelected
+              ? "disabled-link"
+              : undefined
+          }
+          style={styles.logo}
+          to={"home"}
+        >
+          <Image
+            src={require(`../asssets/Images/${label}.png`)}
+            preview={false}
+            style={styles.logoImg}
+          />
+          {isSelected && (
+            <>
+              <img
+                src={require("../asssets/Images/selected.png")}
+                style={styles.selected}
+                alt="selected"
+              />
+              <img
+                src={require("../asssets/Images/selectedEffect.png")}
+                style={styles.selectedEffect}
+                alt="selectedEffect"
+              />
+              <img
+                src={require("../asssets/Images/selectedBorder.png")}
+                style={styles.logoBorder}
+                alt="selectedBorder"
+              />
+            </>
+          )}
+        </Link>
       </div>
     );
   }

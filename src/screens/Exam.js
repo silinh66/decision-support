@@ -1,53 +1,94 @@
-import { get } from "lodash";
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import {
+  getListQuestionAPI,
+  getOptionQuestionSetAPI,
+} from "../api/ApiQuestion";
+import { createGroups } from "../utils/common";
+
+import { Modal } from "antd";
+import { get, set } from "lodash";
 import Question from "../components/Question";
-import { listQuestions } from "../fakeData/listQuestions";
-import { listQuestionSets } from "../fakeData/listQuestionSets";
-import { Button, Modal } from "antd";
-import { Navigate } from "react-router-dom";
 import ResultModal from "../components/ResultModal";
+import { listQuestionSets } from "../fakeData/listQuestionSets";
+import Timer from "../components/Timer";
 
-export default class Exam extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      questionList: [],
-      currentQuestionSet: {},
-      time: {},
-      seconds: 5400,
-      listAnswer: [],
-      isModalVisible: false,
-      showResult: false,
-      idQuestionSet: "",
+export default function Exam() {
+  const { state } = useLocation();
+  const [questionList, setQuestionList] = useState([]);
+  const [listAnswer, setListAnswer] = useState([]);
+  const [listQuestionSet, setListQuestionSet] = useState([]);
+  const [currentQuestionSet, setCurrentQuestionSet] = useState({});
+  const [time, setTime] = useState({});
+  const [timeFinish, setTimeFinish] = useState("");
+  const [seconds, setSeconds] = useState(5400);
+  const [count, setCount] = useState(0);
+  const [topic, setTopic] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [idQuestionSet, setIdQuestionSet] = useState("");
+  let timer = 0;
+
+  useEffect(() => {
+    const idQuestionSet = window.location.pathname.split("/")[2];
+    setIdQuestionSet(idQuestionSet);
+    setTopic(state.topic);
+    setCurrentQuestionSet(state.questionSet);
+    console.log("state.questionSet: ", state.questionSet);
+    onGetListQuestionByQuestionSet(idQuestionSet);
+    // const questionList = listQuestions.filter((question) => {
+    //   return question.idQuestionSet === idQuestionSet;
+    // });
+    // const listAnswer = questionList.map((question) => {
+    //   return {
+    //     id: question.id,
+    //     answer: "",
+    //   };
+    // });
+    // this.setState({
+    //   questionList: questionList,
+    //   currentQuestionSet: listQuestionSets.find((questionSet) => {
+    //     return questionSet.id === idQuestionSet;
+    //   }),
+    //   listAnswer: listAnswer,
+    //   idQuestionSet: idQuestionSet,
+    // });
+    let timeLeftVar = secondsToTime(seconds);
+    setTime(timeLeftVar);
+    // startTimer();
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    setSeconds(seconds);
+  }, [seconds]);
+
+  const onGetListQuestionByQuestionSet = async (idQuestionSet) => {
+    const payload = {
+      id_qs: idQuestionSet,
+      per: 1,
     };
-    this.timer = 0;
-    this.startTimer = this.startTimer.bind(this);
-    this.countDown = this.countDown.bind(this);
-  }
-
-  componentDidMount() {
-    const idQuestionSet = window.location.pathname.split("/")[3];
-    this.setState({
-      questionList: listQuestions.filter((question) => {
-        return question.idQuestionSet == idQuestionSet;
-      }),
-      currentQuestionSet: listQuestionSets.find((questionSet) => {
-        return questionSet.id == idQuestionSet;
-      }),
-      listAnswer: listQuestions.map((question) => {
+    const response = await getListQuestionAPI(payload);
+    console.log("response: ", response);
+    setQuestionList(
+      response.payload.map((question, index) => {
         return {
-          id: question.id,
+          ...question,
+          id: index + 1,
+        };
+      })
+    );
+    setListAnswer(
+      response.payload.map((question, index) => {
+        return {
+          id: index + 1,
           answer: "",
         };
-      }),
-      idQuestionSet: idQuestionSet,
-    });
-    let timeLeftVar = this.secondsToTime(this.state.seconds);
-    this.setState({ time: timeLeftVar });
-    this.startTimer();
-  }
+      })
+    );
+  };
 
-  secondsToTime(secs) {
+  const secondsToTime = (secs) => {
     let hours = Math.floor(secs / (60 * 60));
 
     let divisor_for_minutes = secs % (60 * 60);
@@ -62,131 +103,159 @@ export default class Exam extends Component {
       s: seconds,
     };
     return obj;
-  }
+  };
 
-  startTimer() {
-    if (this.timer == 0 && this.state.seconds > 0) {
-      this.timer = setInterval(this.countDown, 1000);
+  const startTimer = () => {
+    if (timer === 0 && seconds > 0) {
+      timer = setInterval(countDown, 1000);
     }
-  }
+  };
 
-  countDown() {
+  const countDown = () => {
     // Remove one second, set state so a re-render happens.
-    let seconds = this.state.seconds - 1;
-    this.setState({
-      time: this.secondsToTime(seconds),
-      seconds: seconds,
-    });
-
+    let seconds_ = seconds - 1;
+    console.log("seconds_: ", seconds_);
+    setTime(secondsToTime(seconds_));
+    setSeconds(seconds_);
     // Check if we're at zero.
-    if (seconds == 0) {
-      clearInterval(this.timer);
+    if (seconds_ === 0) {
+      clearInterval(timer);
     }
-  }
+  };
 
-  onChangeAnswer = (id, answer) => {
-    const { listAnswer } = this.state;
-    const newListAnswer = listAnswer.map((item) => {
-      if (item.id == id) {
+  const onChangeAnswer = (id, answer) => {
+    const oldListAnswer = listAnswer;
+    const newListAnswer = oldListAnswer.map((item) => {
+      if (item.id === id) {
         item.answer = answer;
       }
       return item;
     });
-    this.setState({ listAnswer: newListAnswer });
+    setListAnswer(newListAnswer);
   };
 
-  showModal = () => {
-    this.setState({
-      isModalVisible: true,
+  const showModal = () => {
+    console.log("questionList: ", questionList);
+    console.log("listAnswer: ", listAnswer);
+    let count = 0;
+    questionList.forEach((question, index) => {
+      if (question.final === listAnswer[index].answer) {
+        count++;
+      }
     });
+    console.log("count", count);
+    setCount(count);
+    setIsModalVisible(true);
+    setTimeFinish(time);
   };
 
-  handleOk = () => {
-    this.setState({
-      isModalVisible: false,
-    });
+  const handleOk = () => {
+    setIsModalVisible(false);
   };
 
-  handleCancel = () => {
-    this.setState({
-      isModalVisible: false,
-    });
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
-  onCloseModal = () => {
-    this.setState({
-      isModalVisible: false,
-      showResult: true,
-    });
+  const onCloseModal = () => {
+    setIsModalVisible(false);
+    setShowResult(true);
   };
-  render() {
-    const { onChangeAnswer, showModal, handleOk, handleCancel } = this;
-    const {
-      questionList,
-      currentQuestionSet,
-      listAnswer,
-      isModalVisible,
-      showResult,
-      idQuestionSet,
-    } = this.state;
-    return (
-      <div style={styles.contentComponent}>
-        {showResult && <Navigate to={`result`} replace={true} />}
-        <div style={styles.stickyHeader}>
-          <div style={styles.titleHeader}>
-            <div style={styles.title}>
-              Đề thi năm {get(currentQuestionSet, "year", "")}{" "}
-              <span style={styles.span}>{">"}</span>{" "}
-              {get(currentQuestionSet, "name", "")}
-            </div>
-            <div style={styles.seeMore}>
-              <span style={styles.time}>Thời gian: </span>{" "}
-              {this.state.time.m < 10
-                ? `0${this.state.time.m}`
-                : this.state.time.m}{" "}
-              :{" "}
-              {this.state.time.s < 10
-                ? `0${this.state.time.s}`
-                : this.state.time.s}
-            </div>
+
+  const getTime = (curMinutes, curSeconds) => {
+    let time = "";
+    if (curMinutes < 10) {
+      time += "0";
+    }
+    time += curMinutes + ":";
+    if (curSeconds < 10) {
+      time += "0";
+    }
+    time += curSeconds;
+    setTime(time);
+    return time;
+  };
+
+  return (
+    <div style={styles.contentComponent}>
+      {showResult && (
+        <Navigate
+          state={{
+            id: "1",
+            listAnswer,
+            questionList,
+            currentQuestionSet,
+          }}
+          to={{
+            pathname: `result`,
+            state: {
+              result: listAnswer,
+            },
+          }}
+          replace={true}
+        />
+      )}
+      <div style={styles.stickyHeader}>
+        <div style={styles.titleHeader}>
+          <div style={styles.title}>
+            {topic && topic.name}
+            <span style={styles.span}>{">"}</span>{" "}
+            {get(currentQuestionSet, "description", "")}
           </div>
-          <div style={styles.description}>
-            Đề thi được thu thập và tổng hợp từ các bộ đề của bộ GD&ĐT năm
-            2020-2021.
+          <div style={styles.seeMore}>
+            <span style={styles.time}>Thời gian: </span>{" "}
+            {/* {time.m < 10 ? `0${time.m}` : time.m} :{" "}
+            {time.s < 10 ? `0${time.s}` : time.s} */}
+            <Timer getTime={getTime} initialMinute={90} initialSeconds={0} />
           </div>
         </div>
-        <div style={styles.questionList}>
-          {questionList.map((question) => {
-            return (
-              <Question
-                key={question.id}
-                question={question}
-                answer={listAnswer[question.id]}
-                onChangeAnswer={onChangeAnswer}
-              />
-            );
-          })}
+        <div style={styles.description}>
+          Đề thi được thu thập và tổng hợp từ các bộ đề của bộ GD&ĐT năm
+          2020-2021.
         </div>
-        <div style={styles.stickyBottom}>
-          <Button onClick={showModal} style={styles.button}>
-            Nộp bài thi
-          </Button>
-        </div>
-        <Modal
-          visible={isModalVisible}
-          onOk={handleOk}
-          title="Kết quả"
-          onCancel={handleCancel}
-          footer={null}
-          centered
-          style={styles.modal}
-          closable={false}
-        >
-          <ResultModal onCloseModal={this.onCloseModal} />
-        </Modal>
       </div>
-    );
-  }
+      <div style={styles.questionList}>
+        {questionList.map((question) => {
+          return (
+            <Question
+              key={question.id}
+              question={question}
+              answer={listAnswer.find((answer) => {
+                return answer.id === question.id;
+              })}
+              onChangeAnswer={onChangeAnswer}
+            />
+          );
+        })}
+      </div>
+      <div style={styles.stickyBottom}>
+        <button
+          className="customBtn noselect"
+          onClick={showModal}
+          style={styles.button}
+        >
+          Nộp bài thi
+        </button>
+      </div>
+      <Modal
+        visible={isModalVisible}
+        onOk={handleOk}
+        title="Kết quả"
+        onCancel={handleCancel}
+        footer={null}
+        centered
+        style={styles.modal}
+        closable={false}
+      >
+        <ResultModal
+          time={timeFinish}
+          total={questionList.length}
+          count={count}
+          onCloseModal={onCloseModal}
+        />
+      </Modal>
+    </div>
+  );
 }
 
 const styles = {
@@ -220,6 +289,7 @@ const styles = {
     fontSize: "24px",
     lineHeight: "18px",
     color: "rgba(255, 255, 255, 0.25)",
+    display: "flex",
   },
   description: {
     fontStyle: "normal",
@@ -274,6 +344,7 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     height: "38px",
+    padding: "10px",
   },
   modal: {
     padding: 0,

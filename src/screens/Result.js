@@ -1,131 +1,21 @@
 import { get } from "lodash";
-import React, { Component } from "react";
-import Question from "../components/Question";
-import { listQuestions } from "../fakeData/listQuestions";
-import { listQuestionSets } from "../fakeData/listQuestionSets";
-import { Button, Modal } from "antd";
-import { Navigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import QuestionResult from "../components/QuestionResult";
 
-export default class Result extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      questionList: [],
-      currentQuestionSet: {},
-      time: {},
-      seconds: 5400,
-      listAnswer: [],
-      isModalVisible: false,
-      showResult: false,
-    };
-    this.timer = 0;
-    this.startTimer = this.startTimer.bind(this);
-    this.countDown = this.countDown.bind(this);
-  }
-
-  componentDidMount() {
-    const idQuestionSet = window.location.pathname.split("/")[3];
-    this.setState({
-      questionList: listQuestions.filter((question) => {
-        return question.idQuestionSet == idQuestionSet;
-      }),
-      currentQuestionSet: listQuestionSets.find((questionSet) => {
-        return questionSet.id == idQuestionSet;
-      }),
-      listAnswer: listQuestions.map((question) => {
-        return {
-          id: question.id,
-          answer: "",
-        };
-      }),
-    });
-    let timeLeftVar = this.secondsToTime(this.state.seconds);
-    this.setState({ time: timeLeftVar });
-    // this.startTimer();
-  }
-
-  secondsToTime(secs) {
-    let hours = Math.floor(secs / (60 * 60));
-
-    let divisor_for_minutes = secs % (60 * 60);
-    let minutes = Math.floor(secs / 60);
-
-    let divisor_for_seconds = divisor_for_minutes % 60;
-    let seconds = Math.ceil(divisor_for_seconds);
-
-    let obj = {
-      h: hours,
-      m: minutes,
-      s: seconds,
-    };
-    return obj;
-  }
-
-  startTimer() {
-    if (this.timer == 0 && this.state.seconds > 0) {
-      this.timer = setInterval(this.countDown, 1000);
-    }
-  }
-
-  countDown() {
-    // Remove one second, set state so a re-render happens.
-    let seconds = this.state.seconds - 1;
-    this.setState({
-      time: this.secondsToTime(seconds),
-      seconds: seconds,
-    });
-
-    // Check if we're at zero.
-    if (seconds == 0) {
-      clearInterval(this.timer);
-    }
-  }
-
-  onChangeAnswer = (id, answer) => {
-    const { listAnswer } = this.state;
-    const newListAnswer = listAnswer.map((item) => {
-      if (item.id == id) {
-        item.answer = answer;
-      }
-      return item;
-    });
-    this.setState({ listAnswer: newListAnswer });
-  };
-
-  showModal = () => {
-    this.setState({
-      isModalVisible: true,
-    });
-  };
-
-  handleOk = () => {
-    this.setState({
-      isModalVisible: false,
-    });
-  };
-
-  handleCancel = () => {
-    this.setState({
-      isModalVisible: false,
-    });
-  };
-
-  onCloseModal = () => {
-    this.setState({
-      isModalVisible: false,
-      showResult: true,
-    });
-  };
-  render() {
-    const { onChangeAnswer, showModal, handleOk, handleCancel } = this;
-    const {
-      questionList,
-      currentQuestionSet,
-      listAnswer,
-      isModalVisible,
-      showResult,
-    } = this.state;
-    return (
+export default function Result() {
+  const { state } = useLocation();
+  const [currentQuestionSet, setCurrentQuestionSet] = useState([]);
+  const [questionList, setQuestionList] = useState([]);
+  const [listAnswer, setListAnswer] = useState([]);
+  useEffect(() => {
+    setCurrentQuestionSet(state.currentQuestionSet);
+    setQuestionList(state.questionList);
+    setListAnswer(state.listAnswer);
+    // eslint-disable-next-line
+  }, []);
+  return (
+    <div>
       <div style={styles.contentComponent}>
         <div style={styles.stickyHeader}>
           <div style={styles.titleHeader}>
@@ -135,14 +25,7 @@ export default class Result extends Component {
               {get(currentQuestionSet, "name", "")}
             </div>
             <div style={styles.seeMore}>
-              <span style={styles.time}>Thời gian: </span>{" "}
-              {this.state.time.m < 10
-                ? `0${this.state.time.m}`
-                : this.state.time.m}{" "}
-              :{" "}
-              {this.state.time.s < 10
-                ? `0${this.state.time.s}`
-                : this.state.time.s}
+              <span style={styles.time}>Thời gian: </span> 90 : 00
             </div>
           </div>
           <div style={styles.description}>
@@ -153,35 +36,19 @@ export default class Result extends Component {
         <div style={styles.questionList}>
           {questionList.map((question) => {
             return (
-              <Question
+              <QuestionResult
                 key={question.id}
                 question={question}
-                answer={listAnswer[question.id]}
-                onChangeAnswer={onChangeAnswer}
+                answer={listAnswer.find((answer) => {
+                  return answer.id === question.id;
+                })}
               />
             );
           })}
         </div>
-        <div style={styles.stickyBottom}>
-          <Button onClick={showModal} style={styles.button}>
-            Nộp bài thi
-          </Button>
-        </div>
-        <Modal
-          visible={isModalVisible}
-          onOk={handleOk}
-          title="Kết quả"
-          onCancel={handleCancel}
-          footer={null}
-          centered
-          style={styles.modal}
-          closable={false}
-        >
-          <Result closeModal={handleCancel} />
-        </Modal>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 const styles = {

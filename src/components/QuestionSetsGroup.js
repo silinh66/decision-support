@@ -1,26 +1,70 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { getOptionQuestionSetAPI } from "../api/ApiQuestion";
 import QuestionSetItem from "./QuestionSetItem";
 
 export default class QuestionSetsGroup extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      listQuestionSet: [],
+    };
+  }
+  componentDidMount() {
+    this.onGetListOptionQuestionSet();
+  }
+
+  onGetListOptionQuestionSet = async () => {
+    const payload = {
+      id_topic: this.props.topic.id,
+      per: 0,
+    };
+
+    const listQuestionSet = await getOptionQuestionSetAPI(payload);
+    this.setState({
+      listQuestionSet: listQuestionSet.payload,
+    });
+  };
   render() {
-    const { listQuestionSets, year } = this.props;
+    const { onGetListOptionQuestionSet } = this;
+    const { topic } = this.props;
+    const { listQuestionSet } = this.state;
     return (
       <div>
         <div style={styles.titleHeader}>
-          <div style={styles.title}>Đề thi năm {year}</div>
-          <div className="customBtn noselect" style={styles.seeMore}>
-            Xem thêm
-          </div>
+          <div style={styles.title}>{topic && topic.name}</div>
+          <Link
+            state={{
+              id: "1",
+              listQuestionSet,
+              topic,
+            }}
+            to={{
+              pathname: `/questionSet`,
+              state: {
+                result: listQuestionSet,
+              },
+            }}
+          >
+            <div className="customBtn noselect" style={styles.seeMore}>
+              Xem thêm
+            </div>
+          </Link>
         </div>
 
         <div style={styles.container}>
-          {listQuestionSets.map((questionSet) => (
-            <QuestionSetItem
-              // onPickQuestionSet={onPickQuestionSet}
-              key={questionSet.id}
-              questionSet={questionSet}
-            />
-          ))}
+          {listQuestionSet &&
+            listQuestionSet.slice(0, 3).map((questionSet, index) => (
+              <QuestionSetItem
+                // onPickQuestionSet={onPickQuestionSet}
+                key={questionSet.id}
+                questionSet={questionSet}
+                icon={index}
+                topic={topic}
+                onGetListOptionQuestionSet={onGetListOptionQuestionSet}
+                isTwoQuestionSet={listQuestionSet.length === 2}
+              />
+            ))}
         </div>
       </div>
     );

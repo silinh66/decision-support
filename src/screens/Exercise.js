@@ -1,39 +1,43 @@
+import { Pagination } from "antd";
 import React, { Component } from "react";
-import { Image, Pagination } from "antd";
-import RecentActivityItem from "../components/RecentActivityItem";
-import RecentTrendItem from "../components/RecentTrendItem";
-import RecentSubjectItem from "../components/RecentSubjectItem";
-import { listRecentActivities } from "../fakeData/recentActivity";
-import { listRecentTrends } from "../fakeData/recentTrend";
-import { listRecentSubjects } from "../fakeData/recentSubject";
-import { groupBy } from "lodash";
+import { getListAllTopics } from "../api/ApiTopic";
 import QuestionSetsGroup from "../components/QuestionSetsGroup";
-import { listQuestionSets } from "../fakeData/listQuestionSets";
 
 export default class Exercise extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      listTopic: [],
+    };
   }
+  componentDidMount() {
+    this.onGetListTopic();
+  }
+
+  onGetListTopic = async () => {
+    const response = await getListAllTopics();
+    const activeTopics = response.payload
+      .filter((topic) => topic.status === 1)
+      .reverse();
+    this.setState({
+      listTopic: activeTopics,
+    });
+  };
+
   render() {
-    const groupByYearQuestionSets = groupBy(listQuestionSets, "year");
+    const { listTopic } = this.state;
     return (
       <div style={styles.contentComponent}>
         <div style={styles.titleHeader}>
           <div style={styles.title}>Thư viện đề thi</div>
           <Pagination showSizeChanger={false} defaultCurrent={1} total={500} />
         </div>
-        <div style={styles.content}>
-          {Object.keys(groupByYearQuestionSets)
-            .reverse()
-            .map((year) => (
-              <QuestionSetsGroup
-                key={year}
-                year={year}
-                listQuestionSets={groupByYearQuestionSets[year]}
-              />
-            ))}
+        <div>
+          {listTopic.map((topic) => (
+            <QuestionSetsGroup key={topic.id} topic={topic} />
+          ))}
         </div>
+        <div style={{ height: "12vh" }}></div>
       </div>
     );
   }
@@ -52,10 +56,6 @@ const styles = {
     lineHeight: "36px",
     color: "#FFFFFF",
     marginBottom: "20px",
-  },
-  content: {
-    display: "flex",
-    flexDirection: "column",
   },
   titleHeader: {
     display: "flex",

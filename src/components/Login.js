@@ -1,32 +1,67 @@
-import { Form, Input, Button, Checkbox, Image } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Checkbox, Image, Input, notification } from "antd";
+import { get } from "lodash";
 import React, { Component } from "react";
+import { loginAccountAPI } from "../api/ApiAccount";
+import { setLocalData } from "../services/StoreService";
+import { EncryptPassword } from "../utils/common";
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
       passwordShow: false,
+      rememberPassword: true,
+      username: "",
+      password: "",
     };
   }
 
-  onFinish = (data) => {
-    // const email = get(data, "email");
-    // const password = get(data, "password");
-    // const payload = {
-    // 	email,
-    // 	password: EncriptPassword(email, password),
-    // };
-    // this.props.doLoginAccount(payload, {
-    // 	callbackOnSuccess: () => {
-    // 		window.location.reload();
-    // 	},
-    // });
+  onLogin = async () => {
+    const { username, password } = this.state;
+    if (!username) {
+      notification.error({ message: "Chưa nhập tên tài khoản" });
+      return;
+    }
+    if (!password) {
+      notification.error({ message: "Chưa nhập mật khẩu" });
+      return;
+    }
+    const payload = {
+      email: username,
+      password: EncryptPassword(username, password),
+    };
+    const response = await loginAccountAPI(payload);
+    await setLocalData("access_token", get(response.payload, "userToken"));
+    await setLocalData("account", get(response.payload, "userInfo"));
+    window.location.reload();
+  };
+
+  onRegister = () => {
+    this.props.showModalRegister();
+    this.props.handleCancel();
+  };
+
+  onChangeRememberPassword = (e) => {
+    this.setState({ rememberPassword: e.target.checked });
+  };
+
+  onChangeUsername = (e) => {
+    this.setState({ username: e.target.value });
+  };
+
+  onChangePassword = (e) => {
+    this.setState({ password: e.target.value });
   };
 
   render() {
-    const { onFinish } = this;
-    const { passwordShow } = this.state;
+    const {
+      onLogin,
+      onChangeRememberPassword,
+      onChangeUsername,
+      onChangePassword,
+      onRegister,
+    } = this;
+    const { passwordShow, rememberPassword, username, password } = this.state;
     return (
       <main style={styles.container} className="wrap-form">
         <div className="form-login">
@@ -36,7 +71,12 @@ class Login extends Component {
                 preview={false}
                 src={require("../asssets/Images/username.png")}
               ></Image>
-              <Input style={styles.input} placeholder="Username" />
+              <Input
+                value={username}
+                onChange={onChangeUsername}
+                style={styles.input}
+                placeholder="Username"
+              />
             </div>
             <div style={styles.inputContainer}>
               <Image
@@ -44,6 +84,8 @@ class Login extends Component {
                 src={require("../asssets/Images/password.png")}
               ></Image>
               <Input
+                value={password}
+                onChange={onChangePassword}
                 style={styles.input}
                 type={passwordShow ? "text" : "password"}
                 placeholder="Password"
@@ -59,27 +101,33 @@ class Login extends Component {
               ></Image>
             </div>
             <div style={styles.passwordContainer}>
-              <div name="remember" valuePropName="checked" noStyle>
-                <Checkbox checked style={styles.checkbox}>
+              <div>
+                <Checkbox
+                  onChange={onChangeRememberPassword}
+                  checked={rememberPassword}
+                  style={styles.checkbox}
+                >
                   Nhớ mật khẩu
                 </Checkbox>
               </div>
-              <a
-                style={styles.forgotPassword}
-                className="login-form-forgot"
-                href=""
-              >
+              <div className="customBtn noselect" style={styles.forgotPassword}>
                 Quên mật khẩu?
-              </a>
+              </div>
             </div>
             <div style={styles.btnFooter}>
               <button
-                onClick={() => {
-                  console.log("Login");
-                }}
+                className="customBtn noselect"
+                onClick={onLogin}
                 style={styles.loginBtn}
               >
                 Đăng nhập
+              </button>
+              <button
+                className="customBtn noselect"
+                onClick={onRegister}
+                style={styles.registerBtn}
+              >
+                Đăng ký
               </button>
               {/* hoặc <a href="">Đăng ký</a> */}
             </div>
@@ -145,10 +193,20 @@ const styles = {
   loginBtn: {
     width: "90%",
     height: "55px",
+    backgroundColor: "#B38EE6",
+    color: "#fff",
+    borderRadius: "10px",
+    border: "1px solid #393D5D",
+  },
+  registerBtn: {
+    width: "90%",
+    height: "55px",
     backgroundColor: "#393D5D",
     color: "#fff",
     borderRadius: "10px",
     border: "1px solid #393D5D",
+    marginTop: "10px",
+    marginBottom: "10px",
   },
   btnFooter: {
     marginBottom: "10px",
