@@ -94,8 +94,9 @@ class Register extends Component {
       await setLocalData("account", get(response.payload, "userInfo"));
       window.location.reload();
     } catch (error) {
+      console.log("error.response.data", error.response.data);
       notification.error({
-        message: `Đăng kí thất bại ${error}`,
+        message: `Đăng kí thất bại ${error.response.data.message}`,
       });
     }
   };
