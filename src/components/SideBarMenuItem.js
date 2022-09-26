@@ -41,11 +41,12 @@ const styles = {
     padding: "10px 10px",
     margin: "12px 16px",
     borderRadius: "5px",
-    backgroundColor: "#2E275A",
+    // backgroundColor: "#2E275A",
   },
   label: {
     marginLeft: "10px",
     color: "#ffffff",
     fontSize: "17px",
+    zIndex: 999,
   },
 };

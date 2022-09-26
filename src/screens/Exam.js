@@ -343,7 +343,6 @@ const styles = {
     color: "#ffffff",
     border: "none",
     borderRadius: "8px",
-    height: "38px",
     padding: "10px",
   },
   modal: {

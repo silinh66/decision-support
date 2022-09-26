@@ -6,12 +6,14 @@ export default class SideMenu extends Component {
     super(props);
     this.state = {
       listSideMenu: [],
+      activeMenuIndex: 0,
     };
   }
 
   componentDidMount() {
     if (this.props.isLogin) {
       this.setState({
+        activeMenuIndex: 0,
         listSideMenu:
           this.props.permission === "1"
             ? [
@@ -98,6 +100,7 @@ export default class SideMenu extends Component {
       });
     } else {
       this.setState({
+        activeMenuIndex: 0,
         listSideMenu: [
           {
             id: "0",
@@ -115,6 +118,7 @@ export default class SideMenu extends Component {
     if (prevProps !== this.props) {
       if (prevProps.permission !== this.props.permission) {
         this.setState({
+          activeMenuIndex: 0,
           listSideMenu:
             this.props.permission === "1"
               ? [
@@ -203,6 +207,7 @@ export default class SideMenu extends Component {
       if (prevProps.isLogin !== this.props.isLogin) {
         if (this.props.isLogin) {
           this.setState({
+            activeMenuIndex: 0,
             listSideMenu:
               this.props.permission === "1"
                 ? [
@@ -309,17 +314,26 @@ export default class SideMenu extends Component {
     listSideMenu.map((item) => (item.isActive = false));
     this.props.onChangeTab(item);
     listSideMenu[item].isActive = true;
-    this.setState({ listSideMenu });
+    this.setState({ listSideMenu, activeMenuIndex: item });
   };
   render() {
     const { onChangeMenu } = this;
-    const { listSideMenu } = this.state;
+    const { listSideMenu, activeMenuIndex } = this.state;
+    console.log("activeMenuIndex: ", activeMenuIndex);
     return (
       <div style={styles.sideMenu}>
         <div className="customBtn noselect" style={styles.title}>
           TheTester
         </div>
         <div style={styles.devider}></div>
+        <div className="customBtn noselect">
+        <div
+          style={
+            styles.slideBarItemActive(activeMenuIndex)
+          }
+        >
+        </div>
+      </div>
         {listSideMenu.map((item) => (
           <SideBarMenuItem
             onChangeMenu={onChangeMenu}
@@ -347,5 +361,15 @@ const styles = {
   sideMenu: {
     background: "#736198",
     width: "100%",
+  },
+  slideBarItemActive: (index) => {
+    return {
+      margin: "12px 16px",
+      borderRadius: "5px",
+      backgroundColor: "#2E275A",
+      height: 47,
+      transition: '0.4s',
+      transform: `translateY(${(+index+1)*58.7}px)`,
+    }
   },
 };

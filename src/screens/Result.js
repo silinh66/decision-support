@@ -22,7 +22,7 @@ export default function Result() {
             <div style={styles.title}>
               Đề thi năm {get(currentQuestionSet, "year", "")}{" "}
               <span style={styles.span}>{">"}</span>{" "}
-              {get(currentQuestionSet, "name", "")}
+              {get(currentQuestionSet, "description", "")}
             </div>
             <div style={styles.seeMore}>
               <span style={styles.time}>Thời gian: </span> 90 : 00
