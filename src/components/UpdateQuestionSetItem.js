@@ -111,6 +111,17 @@ export default class UpdateQuestionSetItem extends Component {
         >
           <ModalDeleteQuestionSet handleOk={handleOk} />
         </Modal>
+        <Modal
+          visible={isModalVisible}
+          onOk={handleOk}
+          title="Thông báo"
+          onCancel={handleCancel}
+          footer={null}
+          centered
+          style={styles.modal}
+        >
+          <ModalEditOption handleOk={handleOk} />
+        </Modal>
       </div>
     );
   }
